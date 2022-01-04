@@ -55,11 +55,6 @@ resource "aws_iam_policy" "sftp-idp" {
         "Statement": [
             {
                 "Effect": "Allow",
-                "Action": "dynamodb:GetItem",
-                "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.authentication.name}"
-            },
-            {
-                "Effect": "Allow",
                 "Action": "secretsmanager:GetSecretValue",
                 "Resource": "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:SFTP/*"
             }
