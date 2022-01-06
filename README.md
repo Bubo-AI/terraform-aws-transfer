@@ -1,30 +1,30 @@
 # terraform-aws-transfer
 
+> This repo forked from [darren-reddick/terraform-aws-transfer](https://github.com/darren-reddick/terraform-aws-transfer). Please check out the original repo.
+>
+> ### Change summary:
+> * Any reference to `dynamo` backend has been removed, the default is now the secret manager.
+
 This is a Terraform module to create a custom identity provider for the AWS Transfer for SFTP service.
 
 This module aims to set up an identity provider built on:
 * API Gateway
 * Lambda
-* DynamoDB or AWS Secrets
+* AWS Secrets
 
 This module will output the URL for the API Gateway which should be used as the ***url*** argument for the ***aws_transfer_server*** resource
 
 ## Credential Store
 
-A DynamoDB table will be created by the resource and can be used to store SFTP user credentials and user directory details.
-
-Alternatively for security, the credentials can be stored as AWS Secrets.
+The credentials stored as AWS Secrets.
 
 The infrastructure code is based on the example provided (in the CF template) in the AWS Storage Blog article
-https://aws.amazon.com/blogs/storage/enable-password-authentication-for-aws-transfer-for-sftp-using-aws-secrets-manager/.
-That example uses AWS Secrets Manager which costs $0.40 per Secret so a DynamoDB based solution may be more palatable as having many users may incur high costs on smaller budgets.
+https://aws.amazon.com/blogs/storage/enable-password-authentication-for-aws-transfer-family-using-aws-secrets-manager-updated/.
+
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| dynamo_table_name | A name for the dynamodb table that will be created | string |  | yes |
-| creds_store | The creds store that will be used for authentication<br>Valid should be: **dynamo** or **secrets** | string | dynamo | yes |
+
 
 ## Outputs
 
@@ -43,8 +43,7 @@ module "sftp-idp" {
 
 ## Examples
 
-* [Public with Dynamo](https://github.com/devopsgoat/terraform-aws-transfer/tree/master/examples/public-dynamo)
-* [Public with AWS Secrets](https://github.com/devopsgoat/terraform-aws-transfer/tree/master/examples/public-secrets)
+* [Public AWS Transfer](https://github.com/Bubo-AI/terraform-aws-transfer/tree/master/examples)
 
 ## Terraform Versions
 
