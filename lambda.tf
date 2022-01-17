@@ -1,10 +1,17 @@
+module "python_packager" {
+  source       = "github.com/Bubo-AI/terraform-python-packager?ref=v0.1.0"
+  src_dir      = "${path.module}/lambda/source/"
+  package_name = "${path.module}/sftp-idp.zip"
+}
+
 resource "aws_lambda_function" "sftp-idp" {
-  filename         = "${path.module}/sftp-idp.zip"
-  function_name    = "sftp-idp"
+  filename         = module.python_packager.package_path
+  function_name    = "${var.prefix}sftp-idp"
   role             = aws_iam_role.iam_for_lambda_idp.arn
   handler          = "index.lambda_handler"
   source_code_hash = data.archive_file.sftp-idp.output_base64sha256
-  runtime          = "python3.7"
+  runtime          = "python3.9"
+  timeout          = 10 # bcrypt may take a while
 
   environment {
     variables = {
@@ -13,14 +20,9 @@ resource "aws_lambda_function" "sftp-idp" {
   }
 }
 
-data "archive_file" "sftp-idp" {
-  type        = "zip"
-  source_dir  = "${path.module}/lambda/source/"
-  output_path = "${path.module}/sftp-idp.zip"
-}
 
 resource "aws_iam_role" "iam_for_lambda_idp" {
-  name = "iam_for_lambda_idp"
+  name = "${local.prefix_snake}iam_for_lambda_idp"
 
   assume_role_policy = <<-EOF
     {
@@ -45,9 +47,9 @@ resource "aws_iam_role_policy_attachment" "lambda_logs_idp" {
 }
 
 resource "aws_iam_policy" "sftp-idp" {
-  name        = "sftp-idp"
+  name        = "${local.prefix_kebab}sftp-idp"
   path        = "/"
-  description = "IAM policy IdP service for SFTP in Lambda"
+  description = "${var.prefix} IAM policy IdP service for SFTP in Lambda"
 
   policy = <<-EOF
     {
@@ -56,7 +58,7 @@ resource "aws_iam_policy" "sftp-idp" {
             {
                 "Effect": "Allow",
                 "Action": "secretsmanager:GetSecretValue",
-                "Resource": "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:SFTP/*"
+                "Resource": "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:${local.prefix_kebab}SFTP/*"
             }
         ]
     }
