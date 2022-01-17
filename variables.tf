@@ -1,3 +1,7 @@
+variable "stage" {
+  description = "The deployment stage"
+  default     = "dev"
+}
 
 variable "prefix" {
   type        = string

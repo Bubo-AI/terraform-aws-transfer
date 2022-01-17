@@ -6,7 +6,7 @@ module "python_packager" {
 
 resource "aws_lambda_function" "sftp-idp" {
   filename         = module.python_packager.package_path
-  function_name    = "${var.prefix}sftp-idp"
+  function_name    = "${var.prefix}sftp-idp-${var.stage}"
   role             = aws_iam_role.iam_for_lambda_idp.arn
   handler          = "index.lambda_handler"
   source_code_hash = data.archive_file.sftp-idp.output_base64sha256
@@ -22,8 +22,7 @@ resource "aws_lambda_function" "sftp-idp" {
 
 
 resource "aws_iam_role" "iam_for_lambda_idp" {
-  name = "${local.prefix_snake}iam_for_lambda_idp"
-
+  name               = "${local.prefix_snake}iam_for_lambda_idp-${var.stage}"
   assume_role_policy = <<-EOF
     {
       "Version": "2012-10-17",
@@ -47,7 +46,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs_idp" {
 }
 
 resource "aws_iam_policy" "sftp-idp" {
-  name        = "${local.prefix_kebab}sftp-idp"
+  name        = "${local.prefix_kebab}sftp-idp-${var.stage}"
   path        = "/"
   description = "${var.prefix} IAM policy IdP service for SFTP in Lambda"
 
