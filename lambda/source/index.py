@@ -23,7 +23,12 @@ def lambda_handler(
         https://docs.aws.amazon.com/lambda/latest/dg/python-context.html
 
     Returns:
-        [type]: [description]
+        Dict[str, Union[str, List[str]]]: For authenticated users, returns a dictionary
+        of the response data containing Role, Policy, HomeDirectoryDetails (if
+        specified), HomeDirectoryType (if HomeDirectoryDetails specified), PublicKey
+        (as list) if auth_type is SSH, HomeDirectory if specified. Please note that
+        HomeDirectoryType is mutually exclusive with HomeDirectoryDetails. If user is
+        not authenticated, return an empty dictionary.
     """
     if os.environ.get("SecretsManagerRegion") is None:
         print("No authentication method set")
@@ -274,7 +279,9 @@ def get_secret(id):  # type: (str) -> Dict[str,str]
     )
 
     try:
-        resp = client.get_secret_value(SecretId="SFTP/" + id)
+        prefix = os.getenv("prefix", "")
+        print("Looking for secret with name: " + prefix + "SFTP/" + id)
+        resp = client.get_secret_value(SecretId=prefix + "SFTP/" + id)
         # Decrypts secret using the associated KMS CMK.
         # Depending on whether the secret is a string or binary,
         # one of these fields will be populated.

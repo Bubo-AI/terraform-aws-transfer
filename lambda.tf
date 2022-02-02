@@ -1,21 +1,22 @@
 module "python_packager" {
   source       = "github.com/Bubo-AI/terraform-python-packager?ref=v0.1.0"
-  src_dir      = "${path.module}/lambda/source/"
+  src_dir      = "${path.module}/lambda/source"
   package_name = "${path.module}/sftp-idp.zip"
 }
 
 resource "aws_lambda_function" "sftp-idp" {
   filename         = module.python_packager.package_path
-  function_name    = "${var.prefix}sftp-idp-${var.stage}"
+  function_name    = "${local.prefix_kebab}sftp-idp-${var.stage}"
   role             = aws_iam_role.iam_for_lambda_idp.arn
   handler          = "index.lambda_handler"
-  source_code_hash = data.archive_file.sftp-idp.output_base64sha256
+  source_code_hash = module.python_packager.package_hash
   runtime          = "python3.9"
   timeout          = 10 # bcrypt may take a while
 
   environment {
     variables = {
       "${local.auth_source_name}" = local.auth_source_value
+      "prefix"                    = local.prefix_kebab
     }
   }
 }

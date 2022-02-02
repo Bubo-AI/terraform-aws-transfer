@@ -1,5 +1,5 @@
 resource "aws_iam_role" "iam_for_apigateway_idp" {
-  name = "iam_for_apigateway_idp-${var.stage}"
+  name = "${local.prefix_snake}iam_for_apigateway_idp-${var.stage}"
 
   assume_role_policy = <<-EOF
     {
@@ -29,8 +29,8 @@ resource "aws_api_gateway_account" "api_gateway_account" {
 }
 
 resource "aws_api_gateway_rest_api" "sftp-idp-secrets" {
-  name        = "sftp-idp-secrets"
-  description = "This API provides an IDP for AWS Transfer service"
+  name        = "${local.prefix_kebab}sftp-idp-secrets"
+  description = "${var.prefix} - This API provides an IDP for AWS Transfer service"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -57,7 +57,7 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 resource "aws_api_gateway_stage" "stage" {
-  stage_name    = var.stage
+  stage_name    = "${local.prefix_kebab}${var.stage}"
   rest_api_id   = aws_api_gateway_rest_api.sftp-idp-secrets.id
   deployment_id = aws_api_gateway_deployment.deployment.id
 }
