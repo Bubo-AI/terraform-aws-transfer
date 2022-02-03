@@ -3,8 +3,8 @@ variable "stage" {
   default     = "dev"
 
   validation {
-    condition     = can(regex("^[a-z0-9]+$", var.stage))
-    error_message = "The stage must consist of lowercase alphanumeric characters."
+    condition     = can(regex("^[a-z0-9-]+$", var.stage))
+    error_message = "The stage must consist of lowercase alphanumeric characters and a hyphen."
   }
 }
 

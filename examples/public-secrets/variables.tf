@@ -12,3 +12,7 @@ variable "username" {
   description = "SFTP Username"
   default     = "transfer-user"
 }
+variable "region" {
+  description = "The aws region"
+  default     = "eu-west-1"
+}
