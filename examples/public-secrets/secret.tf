@@ -14,7 +14,7 @@ resource "aws_secretsmanager_secret_version" "user" {
   secret_id     = aws_secretsmanager_secret.user.id
   secret_string = <<-EOF
     {
-      "HomeDirectoryDetails": "[{\"Entry\": \"/\", \"Target\": \"/${aws_s3_bucket.sftp.id}/${var.username}/uploads\"}]",
+      "HomeDirectoryDetails": "[{\"Entry\": \"/\", \"Target\": \"/${aws_s3_bucket.sftp.id}/${var.username}\"}]",
       "Password": "REPLACE_ME",
       "Role": "${aws_iam_role.transfer.arn}",
       "UserId": "${var.username}",

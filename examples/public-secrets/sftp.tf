@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {}
 
 # role for SFTP server
 resource "aws_iam_role" "sftp" {
-  # name = "sftp-server-iam-role-${var.stage}"
+  name = "${local.prefix_kebab}sftp-server-iam-role-${var.stage}"
 
   assume_role_policy = <<-POLICY
     {
@@ -81,12 +81,18 @@ resource "aws_iam_role_policy" "sftp_log" {
     {
       "Version": "2012-10-17",
       "Statement": [{
-          "Sid": "AllowFullAccesstoCloudWatchLogs",
+          "Sid": "AmazonAPIGatewayPushToCloudWatchLogs",
           "Effect": "Allow",
           "Action": [
-            "logs:*"
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:DescribeLogGroups",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents",
+            "logs:GetLogEvents",
+            "logs:FilterLogEvents"
           ],
-          "Resource": "*"
+          "Resource": "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/transfer/${aws_transfer_server.sftp.id}*"
         }
       ]
     }

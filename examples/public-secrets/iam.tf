@@ -22,33 +22,43 @@ resource "aws_iam_role_policy" "transfer" {
   role = aws_iam_role.transfer.id
 
   policy = <<-POLICY
-    {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Sid": "AllowListingOfUserFolder",
-                "Action": [
-                    "s3:ListBucket",
-                    "s3:GetBucketLocation"
-                ],
-                "Effect": "Allow",
-                "Resource": [
-                    "${aws_s3_bucket.sftp.arn}"
-                ]
-            },
-            {
-                "Sid": "HomeDirObjectAccess",
-                "Effect": "Allow",
-                "Action": [
-                    "s3:PutObject",
-                    "s3:GetObject",
-                    "s3:DeleteObjectVersion",
-                    "s3:DeleteObject",
-                    "s3:GetObjectVersion"
-                ],
-                "Resource": ["${aws_s3_bucket.sftp.arn}","${aws_s3_bucket.sftp.arn}/*"]
-            }
-        ]
-    }
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Sid": "AllowListingOfUserFolder",
+          "Action": [
+              "s3:ListBucket"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+              "${aws_s3_bucket.sftp.arn}"
+          ],
+          "Condition": {
+              "StringLike": {
+                  "s3:prefix": [
+                      "${var.username}/*",
+                      "${var.username}"
+                  ]
+              }
+          }
+      },
+      {
+          "Sid": "HomeDirObjectAccess",
+          "Effect": "Allow",
+          "Action": [
+              "s3:PutObject",
+              "s3:GetObject",
+              "s3:DeleteObjectVersion",
+              "s3:DeleteObject",
+              "s3:GetObjectVersion"
+          ],
+          "Resource": [
+              "${aws_s3_bucket.sftp.arn}/${var.username}",
+              "${aws_s3_bucket.sftp.arn}/${var.username}/*"
+          ]
+       }
+  ]
+}
   POLICY
 }
