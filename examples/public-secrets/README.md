@@ -1,8 +1,16 @@
 # Simple Public SFTP example using AWS Secrets
 
-This example creates a simple public facing AWS Transfer for SFTP service using the API_GATEWAY identity provider using AWS Secrets as the cred store.
+This example creates a simple public facing AWS Transfer for SFTP service using the API_GATEWAY identity provider using AWS Secrets for the credentials.
 
-A bucket will be created to store the files along with an IAM role for the user to access the service.
+A bucket will be created to store the files along with a sample user and an IAM role for the user to access the service. You can change the default user name from `values.auto.tfvars` file.
+
+> After deploying this service, go to the secret manager and replace the secret key `Password` which has a default value of `REPLACE_ME` with a bcrpyt hash of the password. To generate a bcrypt hash, use the command below and replace `PASSWORDHERE` with your own password.
+
+```python
+python -c 'import bcrypt; print(bcrypt.hashpw("PASSWORDHERE".encode("utf-8"), bcrypt.gensalt()))'
+```
+
+
 
 ## Usage
 
@@ -12,42 +20,23 @@ A bucket will be created to store the files along with an IAM role for the user 
 
 ## Example User Configuration
 
-Once the service has been started, a user can be set up by adding an AWS Secret:
+Once the service has been started, a sample user will be created in the secret manager with the following configuration:
 
-The secret name should be SFTP/user1 for a user login **user1**
 
 | UserId | HomeDirectoryDetails | Role | Password | _AcceptedIpNetwork*_ |
 |--------|----------------------|------|----------|-------------------|
-| user1 | [{\"Entry\": \"/\", \"Target\": \"/test.devopsgoat/${Transfer:UserName}\"}] | arn:aws:iam::[account id]:role/transfer-user-iam-role | Password1 | 192.168.1.0/24 |
+| user1 | `[{\"Entry\": \"/\", \"Target\": \"/s3_bucket/username\"}]` | arn:aws:iam::[account id]:role/transfer-user-iam-role | BCRPYT_HASH | 192.168.1.0/24 |
 
 This will create a user **user1** which is chroot'd to the **/test.devopsgoat/user1** virtual directory in S3.
 
 \* **_AcceptedIpNetwork_** is an optional CIDR for the allowed client source IP address range.
 
-For guidance the following example code will create this Secret:
-
-```
-resource "aws_secretsmanager_secret" "secret" {
-  name                = "SFTP/user1"
-}
-
-resource "aws_secretsmanager_secret_version" "secret" {
-  secret_id     = "${aws_secretsmanager_secret.secret.id}"
-  secret_string = <<-EOF
-    {
-      "HomeDirectoryDetails": "[{\"Entry\": \"/\", \"Target\": \"/test.devopsgoat/$${Transfer:UserName}\"}]",
-      "Password": "Password1",
-      "Role": "arn:aws:iam::XXXXXXX:role/transfer-user-iam-role",
-      "UserId": "user1",
-      "AcceptedIpNetwork": "192.168.1.0/24",
-    }
-  EOF
-}
-```
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| endpoint | The endpoint of the SFTP service |
-| role | The IAM Role that must be assigned to users |
+| Name        | Description                                   |
+|-------------|-----------------------------------------------|
+| endpoint    | The endpoint of the SFTP service              |
+| role        | The IAM Role that must be assigned to users   |
+| user-secret | Name of the secret holding user configuration |
+| username    | SFTP username                                 |
