@@ -29,7 +29,7 @@ Once the service has been started, a sample user will be created in the secret m
 
 This will create a user **user1** which is chroot'd to the **/test.devopsgoat/user1** virtual directory in S3.
 
-\* **_AcceptedIpNetwork_** is an optional CIDR for the allowed client source IP address range.
+\* **_AcceptedIpNetwork_** is an optional CIDR for the allowed client source IP address range. You can specify multiple CIDR by separating with comma, e.g.: `192.0.0.0/24, 224.0.0.0/16`.
 
 
 ## Outputs

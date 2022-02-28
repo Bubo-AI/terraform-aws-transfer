@@ -17,7 +17,7 @@ The credentials can be stored as AWS Secrets.
 The infrastructure code is based on the example provided (in the CF template) in the AWS Storage Blog article
 https://aws.amazon.com/blogs/storage/enable-password-authentication-for-aws-transfer-family-using-aws-secrets-manager-updated//.
 
-WARNING: AWS Secrets Manager costs $0.40 per Secret
+> WARNING: AWS Secrets Manager costs $0.40 per secret per month.
 
 ## Inputs
 
