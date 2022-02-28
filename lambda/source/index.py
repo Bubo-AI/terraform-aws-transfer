@@ -144,14 +144,23 @@ def check_ipaddress(
         print("No IP range provided - Skip IP check")
         return True
 
-    # TODO: Allow for multiple IP ranges
-    net = ip_network(accepted_ip_network)
-    if ip_address(input_sourceIp) in net:
-        print("Source IP address is in allowed CIDR")
-        return True
+    accepted_ip_network_list = []  # type: List[str]
+    # If accepted_ip_network is a list, check if the source IP address is in the list
+    if "," in accepted_ip_network:
+        accepted_ip_network_list = [
+            *map(lambda ip: str(ip).strip(), accepted_ip_network.split(","))
+        ]
     else:
-        print("Source IP address not in range")
-        return False
+        accepted_ip_network_list = [str(accepted_ip_network).strip()]
+
+    for ip in accepted_ip_network_list:
+        net = ip_network(ip)
+        if ip_address(input_sourceIp) in net:
+            print("Source IP address is in allowed CIDR")
+            return True
+
+    print("Source IP address not in range")
+    return False
 
 
 def authenticate_user(
