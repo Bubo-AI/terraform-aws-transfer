@@ -19,6 +19,9 @@ resource "aws_lambda_function" "sftp-idp" {
       "prefix"                    = local.prefix_kebab
     }
   }
+  tracing_config {
+    mode = "Active"
+  }
 }
 
 

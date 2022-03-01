@@ -57,8 +57,30 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 resource "aws_api_gateway_stage" "stage" {
-  stage_name    = "${local.prefix_kebab}${var.stage}"
-  rest_api_id   = aws_api_gateway_rest_api.sftp-idp-secrets.id
-  deployment_id = aws_api_gateway_deployment.deployment.id
+  stage_name           = "${local.prefix_kebab}${var.stage}"
+  rest_api_id          = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  deployment_id        = aws_api_gateway_deployment.deployment.id
+  xray_tracing_enabled = true
+  access_log_settings {
+    destination_arn = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/api_gateway/${local.prefix_kebab}${var.stage}"
+
+    format = jsonencode({
+      request = {
+        requestId         = "$context.requestId"
+        requestTime       = "$context.requestTime"
+        extendedRequestId = "$context.extendedRequestId"
+      }
+    })
+  }
 }
 
+resource "aws_api_gateway_method_settings" "this" {
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  stage_name  = aws_api_gateway_stage.stage.stage_name
+  method_path = "/servers/{serverId}/users/{username}/config/GET"
+  settings {
+    metrics_enabled      = true
+    logging_level        = "INFO"
+    cache_data_encrypted = true
+  }
+}

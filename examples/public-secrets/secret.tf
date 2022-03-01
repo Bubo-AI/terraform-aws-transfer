@@ -6,8 +6,6 @@ resource "aws_secretsmanager_secret" "user" {
     User     = var.username
     Prefix   = var.prefix
   }
-
-
 }
 
 resource "aws_secretsmanager_secret_version" "user" {
