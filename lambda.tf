@@ -1,5 +1,5 @@
 module "python_packager" {
-  source       = "github.com/Bubo-AI/terraform-python-packager?ref=v0.1.0"
+  source       = "github.com/Bubo-AI/terraform-python-packager?ref=v0.1.1"
   src_dir      = "${path.module}/lambda/source"
   package_name = "${path.module}/sftp-idp.zip"
 }
