@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.5] - 2023-12-12
+- Update `terraform-python-packager` to `v0.1.2` which fixes initial python package build.
 
 ## [0.5.4] - 2022-05-17
 
